@@ -95,6 +95,28 @@ function insertWeatherDiv(parentDivId) {
 
               console.log('history: ', dataHist);
               console.log('forecast: ', dataForecast);
+
+              let parsedDailyData = dataHist.daily.time.map((time, index) => {
+                return {
+                  timestamp: time,
+                  iconCode: dataHist.daily.weathercode[index],
+                  precipitationSum: dataHist.daily.precipitation_sum[index],
+                  maxTemp: dataHist.daily.temperature_2m_max[index],
+                  minTemp: dataHist.daily.temperature_2m_min[index],
+                };
+              });
+
+              let parsedHourlyData = dataHist.hourly.time.map((time, index) => {
+                return {
+                  timestamp: time,
+                  iconCode: dataHist.hourly.weathercode[index],
+                  precipitation: dataHist.hourly.precipitation[index],
+                  temperature_2m: dataHist.hourly.temperature_2m[index],
+                };
+              });
+
+              console.log('parsedDailyData', parsedDailyData);
+              console.log('parsedHourlyData', parsedHourlyData);
             } else {
               console.error('Failed to fetch the current time.');
             }
