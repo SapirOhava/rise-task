@@ -21,6 +21,9 @@ function insertWeatherDiv(parentDivId) {
 
     const widgetDiv = document.createElement('div');
     widgetDiv.classList.add('widget');
+    widgetDiv.style.display = 'flex';
+    widgetDiv.style.flexDirection = 'column';
+    widgetDiv.style.border = '1px solid black';
 
     const input = document.createElement('input');
     input.type = 'text';
@@ -32,9 +35,11 @@ function insertWeatherDiv(parentDivId) {
     button.textContent = 'Get Weather';
     widgetDiv.appendChild(button);
 
-    const weatherDiv = document.createElement('div');
+    let weatherDiv = document.createElement('div');
     weatherDiv.classList.add('weather');
-    widgetDiv.appendChild(weatherDiv);
+    weatherDiv.style.display = 'flex';
+    weatherDiv.style.flexDirection = 'row';
+    weatherDiv.style.justifyContent = 'space-between';
 
     button.onclick = async () => {
       const cityName = input.value.trim();
@@ -85,7 +90,6 @@ function insertWeatherDiv(parentDivId) {
               const endDate = formatDate(lastMonthLastDay);
 
               const API_URL_HISTORICAL = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}&hourly=temperature_2m,precipitation,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=${timezone}`;
-
               const responseHist = await fetch(API_URL_HISTORICAL);
               const dataHist = await responseHist.json();
 
@@ -96,19 +100,19 @@ function insertWeatherDiv(parentDivId) {
               console.log('history: ', dataHist);
               console.log('forecast: ', dataForecast);
 
-              let parsedDailyData = dataHist.daily.time.reduce(
-                (acc, time, index) => {
-                  acc[time] = {
-                    iconCode: dataHist.daily.weathercode[index],
-                    dayName: days[new Date(time).getDay()],
-                    precipitationSum: dataHist.daily.precipitation_sum[index],
-                    maxTemp: dataHist.daily.temperature_2m_max[index],
-                    minTemp: dataHist.daily.temperature_2m_min[index],
-                  };
-                  return acc;
-                },
-                {}
-              );
+              //   let parsedDailyData = dataHist.daily.time.reduce(
+              //     (acc, time, index) => {
+              //       acc[time] = {
+              //         iconCode: dataHist.daily.weathercode[index],
+              //         dayName: days[new Date(time).getDay()],
+              //         precipitationSum: dataHist.daily.precipitation_sum[index],
+              //         maxTemp: dataHist.daily.temperature_2m_max[index],
+              //         minTemp: dataHist.daily.temperature_2m_min[index],
+              //       };
+              //       return acc;
+              //     },
+              //     {}
+              //   );
 
               const parsedHourlyData = dataHist.hourly.time.reduce(
                 (acc, time, index) => {
@@ -130,6 +134,7 @@ function insertWeatherDiv(parentDivId) {
                       totalTemp: 0,
                       count: 0,
                       avg_temp: 0,
+                      dayName: days[new Date(date).getDay()],
                     };
                   }
 
@@ -149,8 +154,49 @@ function insertWeatherDiv(parentDivId) {
                 {}
               );
 
-              console.log('parsedDailyData', parsedDailyData);
+              const weeklyAvgTemp = Object.values(parsedHourlyData).reduce(
+                (acc, cur) => {
+                  const dayName = cur.dayName;
+
+                  if (!acc[dayName]) {
+                    acc[dayName] = {
+                      totalTemp: 0,
+                      count: 0,
+                      avgTemp: 0,
+                    };
+                  }
+
+                  acc[dayName].totalTemp += cur.avg_temp;
+                  acc[dayName].count += 1;
+                  acc[dayName].avgTemp =
+                    acc[dayName].totalTemp / acc[dayName].count;
+
+                  return acc;
+                },
+                {}
+              );
               console.log('parsedHourlyData', parsedHourlyData);
+              console.log('weeklyAvgTemp', weeklyAvgTemp);
+              //  console.log('parsedDailyData', parsedDailyData);
+
+              Object.keys(weeklyAvgTemp).forEach((day) => {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.style.flex = '1';
+
+                const dayNameText = document.createTextNode(`${day}: `);
+                dayDiv.appendChild(dayNameText);
+
+                const tempH3 = document.createElement('h3');
+                tempH3.textContent = `Avg Temp: ${weeklyAvgTemp[
+                  day
+                ].avgTemp.toFixed(2)}°C`;
+                dayDiv.appendChild(tempH3);
+
+                weatherDiv.appendChild(dayDiv);
+              });
+
+              widgetDiv.appendChild(weatherDiv);
             } else {
               console.error('Failed to fetch the current time.');
             }
@@ -164,13 +210,6 @@ function insertWeatherDiv(parentDivId) {
         console.error('Please enter a city name.');
       }
     };
-
-    days.forEach((day) => {
-      const dayDiv = document.createElement('div');
-      dayDiv.classList.add('day');
-      dayDiv.textContent = `${day}: ${Math.floor(Math.random() * 30)}°C`;
-      weatherDiv.appendChild(dayDiv);
-    });
 
     parentElement.appendChild(widgetDiv);
   } catch (error) {
