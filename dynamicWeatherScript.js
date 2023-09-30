@@ -1,47 +1,51 @@
-const weatherIcons = {
-  0: {
-    description: 'Sunny',
-    image: 'http://openweathermap.org/img/wn/01d@2x.png',
-  },
-
-  63: {
-    description: 'Rain',
-    image: 'http://openweathermap.org/img/wn/10d@2x.png',
-  },
-
-  73: {
-    description: 'Snow',
-    image: 'http://openweathermap.org/img/wn/13d@2x.png',
-  },
-
-  95: {
-    description: 'Thunderstorm',
-    image: 'http://openweathermap.org/img/wn/11d@2x.png',
-  },
-};
-
-function getWeatherIconNumber(
-  avgMinTemp,
-  avgMaxTemp,
-  avgRainSum,
-  avgWindSpeed
-) {
-  if (avgRainSum > 0) {
-    if (avgMinTemp <= 0) {
-      return weatherIcons[73].image; // Snowy
-    }
-
-    if (avgWindSpeed > 20) {
-      return weatherIcons[95].image; // Stormy
-    }
-
-    return weatherIcons[63].image; // Rainy
-  }
-
-  return weatherIcons[0].image; // Sunny/Clear
-}
+// var script = document.createElement('script');
+// script.src = 'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/main/dynamicWeatherScript.js';
+// document.head.appendChild(script);
 
 function insertWeatherDiv(parentDivId) {
+  const weatherIcons = {
+    0: {
+      description: 'Sunny',
+      image: 'http://openweathermap.org/img/wn/01d@2x.png',
+    },
+
+    63: {
+      description: 'Rain',
+      image: 'http://openweathermap.org/img/wn/10d@2x.png',
+    },
+
+    73: {
+      description: 'Snow',
+      image: 'http://openweathermap.org/img/wn/13d@2x.png',
+    },
+
+    95: {
+      description: 'Thunderstorm',
+      image: 'http://openweathermap.org/img/wn/11d@2x.png',
+    },
+  };
+
+  function getWeatherIconNumber(
+    avgMinTemp,
+    avgMaxTemp,
+    avgRainSum,
+    avgWindSpeed
+  ) {
+    if (avgRainSum > 0) {
+      if (avgMinTemp <= 0) {
+        return weatherIcons[73].image; // Snowy
+      }
+
+      if (avgWindSpeed > 20) {
+        return weatherIcons[95].image; // Stormy
+      }
+
+      return weatherIcons[63].image; // Rainy
+    }
+
+    return weatherIcons[0].image; // Sunny/Clear
+  }
+
   try {
     const days = [
       'Sunday',
