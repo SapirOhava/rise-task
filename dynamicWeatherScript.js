@@ -21,18 +21,45 @@ function insertWeatherDiv(parentDivId) {
 
     const widgetDiv = document.createElement('div');
     widgetDiv.classList.add('widget');
+
     widgetDiv.style.display = 'flex';
     widgetDiv.style.flexDirection = 'column';
     widgetDiv.style.border = '1px solid black';
+    widgetDiv.style.padding = '20px';
+    widgetDiv.style.width = '300px';
+    widgetDiv.style.borderRadius = '5px';
+    widgetDiv.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
 
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'Enter city name';
     input.classList.add('city-input');
+
+    input.style.padding = '10px';
+    input.style.fontSize = '1em';
+    input.style.marginBottom = '10px';
+    input.style.borderRadius = '5px';
+    input.style.border = '1px solid #ccc';
+
     widgetDiv.appendChild(input);
 
     const button = document.createElement('button');
     button.textContent = 'Get Weather';
+
+    button.style.padding = '10px 20px';
+    button.style.fontSize = '1em';
+    button.style.border = 'none';
+    button.style.borderRadius = '5px';
+    button.style.cursor = 'pointer';
+    button.style.backgroundColor = '#4CAF50'; // You can choose any color
+    button.style.color = 'white';
+    button.onmouseover = function () {
+      button.style.backgroundColor = '#45a049'; // Darker shade on hover
+    };
+    button.onmouseout = function () {
+      button.style.backgroundColor = '#4CAF50'; // Return to original color on mouse out
+    };
+
     widgetDiv.appendChild(button);
 
     let weatherDiv = document.createElement('div');
@@ -40,8 +67,15 @@ function insertWeatherDiv(parentDivId) {
     weatherDiv.style.display = 'flex';
     weatherDiv.style.flexDirection = 'row';
     weatherDiv.style.justifyContent = 'space-between';
+    // Add this to handle overflow content
+    weatherDiv.style.flexWrap = 'wrap';
+    // Add some margin at the top for separation
+    weatherDiv.style.marginTop = '20px';
+
+    widgetDiv.appendChild(weatherDiv);
 
     button.onclick = async () => {
+      weatherDiv.innerHTML = '';
       const cityName = input.value.trim();
 
       if (cityName) {
@@ -99,20 +133,6 @@ function insertWeatherDiv(parentDivId) {
 
               console.log('history: ', dataHist);
               console.log('forecast: ', dataForecast);
-
-              //   let parsedDailyData = dataHist.daily.time.reduce(
-              //     (acc, time, index) => {
-              //       acc[time] = {
-              //         iconCode: dataHist.daily.weathercode[index],
-              //         dayName: days[new Date(time).getDay()],
-              //         precipitationSum: dataHist.daily.precipitation_sum[index],
-              //         maxTemp: dataHist.daily.temperature_2m_max[index],
-              //         minTemp: dataHist.daily.temperature_2m_min[index],
-              //       };
-              //       return acc;
-              //     },
-              //     {}
-              //   );
 
               const parsedHourlyData = dataHist.hourly.time.reduce(
                 (acc, time, index) => {
@@ -195,8 +215,6 @@ function insertWeatherDiv(parentDivId) {
 
                 weatherDiv.appendChild(dayDiv);
               });
-
-              widgetDiv.appendChild(weatherDiv);
             } else {
               console.error('Failed to fetch the current time.');
             }
