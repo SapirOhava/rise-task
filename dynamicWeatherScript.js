@@ -123,11 +123,12 @@ function insertWeatherDiv(parentDivId) {
               const startDate = formatDate(lastMonthFirstDay);
               const endDate = formatDate(lastMonthLastDay);
 
-              const API_URL_HISTORICAL = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}&hourly=temperature_2m,precipitation,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=${timezone}`;
+              const API_URL_HISTORICAL = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}&hourly=temperature_2m,rain,weathercode,windspeed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,rain_sum,windspeed_10m_max&timezone=${timezone}`;
               const responseHist = await fetch(API_URL_HISTORICAL);
               const dataHist = await responseHist.json();
 
-              const API_URL_FORCAST = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=${timezone}&past_days=5`;
+              const API_URL_FORCAST = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,rain,weathercode,windspeed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,rain_sum,windspeed_10m_max&timezone=${timezone}&past_days=5`;
+
               const responseForecast = await fetch(API_URL_FORCAST);
               const dataForecast = await responseForecast.json();
 
@@ -139,99 +140,58 @@ function insertWeatherDiv(parentDivId) {
                   acc[time] = {
                     iconCode: dataHist.daily.weathercode[index],
                     dayName: days[new Date(time).getDay()],
-                    precipitationSum: dataHist.daily.precipitation_sum[index],
+                    rainSum: dataHist.daily.rain_sum[index],
                     maxTemp: dataHist.daily.temperature_2m_max[index],
                     minTemp: dataHist.daily.temperature_2m_min[index],
+                    windspeed_10m_max: dataHist.daily.windspeed_10m_max[index],
                   };
                   return acc;
                 },
                 {}
               );
 
-              const parsedHourlyData = dataHist.hourly.time.reduce(
-                (acc, time, index) => {
-                  // Create the data object just like before
-                  const data = {
-                    timestamp: time,
-                    iconCode: dataHist.hourly.weathercode[index],
-                    precipitation: dataHist.hourly.precipitation[index],
-                    temperature_2m: dataHist.hourly.temperature_2m[index],
-                  };
-
-                  // Extracting the date part from the timestamp
-                  const date = time.split('T')[0];
-
-                  // If the date key doesn't exist in the accumulator, initialize it
-                  if (!acc[date]) {
-                    acc[date] = {
-                      dayData: [],
-                      totalTemp: 0,
-                      count: 0,
-                      avg_temp: 0,
-                      dayName: days[new Date(date).getDay()],
-                    };
-                  }
-
-                  // Push the data object to the appropriate date key
-                  acc[date].dayData.push(data);
-
-                  // Update the total temperature and count for average temperature calculation
-                  acc[date].totalTemp += data.temperature_2m;
-                  acc[date].count += 1;
-
-                  // Update the average temperature
-                  acc[date].avg_temp = acc[date].totalTemp / acc[date].count;
-
-                  // Return the updated accumulator for the next iteration
-                  return acc;
-                },
-                {}
-              );
-
-              const weeklyAvgWeatherIcons = Object.values(
-                parsedDailyData
-              ).reduce((acc, cur) => {
-                const dayName = cur.dayName;
-
-                if (!acc[dayName]) {
-                  acc[dayName] = {
-                    allIcons: [],
-                  };
-                }
-
-                acc[dayName].allIcons.push(cur.iconCode);
-
-                return acc;
-              }, {});
-
-              console.log('weeklyAvgWeatherIcons', weeklyAvgWeatherIcons);
-
-              const weeklyAvgTemp = Object.values(parsedHourlyData).reduce(
+              const avgDailyData = Object.values(parsedDailyData).reduce(
                 (acc, cur) => {
                   const dayName = cur.dayName;
 
                   if (!acc[dayName]) {
                     acc[dayName] = {
-                      totalTemp: 0,
+                      totalMaxTemp: 0,
+                      totalMinTemp: 0,
+                      totalRainSum: 0,
+                      totalWindSpeed_10m_max: 0,
                       count: 0,
-                      avgTemp: 0,
+                      avgMaxTemp: 0,
+                      avgMinTemp: 0,
+                      avgRainSum: 0,
+                      avgWindSpeed_10m_max: 0,
+                      iconCodes: [],
                     };
                   }
 
-                  acc[dayName].totalTemp += cur.avg_temp;
+                  acc[dayName].totalMaxTemp += cur.maxTemp;
+                  acc[dayName].totalMinTemp += cur.minTemp;
+                  acc[dayName].totalRainSum += cur.rainSum;
+                  acc[dayName].totalWindSpeed_10m_max += cur.windspeed_10m_max;
                   acc[dayName].count += 1;
-                  acc[dayName].avgTemp =
-                    acc[dayName].totalTemp / acc[dayName].count;
+                  acc[dayName].avgMaxTemp =
+                    acc[dayName].totalMaxTemp / acc[dayName].count;
+                  acc[dayName].avgMinTemp =
+                    acc[dayName].totalMinTemp / acc[dayName].count;
+                  acc[dayName].avgRainSum =
+                    acc[dayName].totalRainSum / acc[dayName].count;
+                  acc[dayName].avgWindSpeed_10m_max =
+                    acc[dayName].totalWindSpeed_10m_max / acc[dayName].count;
 
                   return acc;
                 },
                 {}
               );
-              console.log('parsedHourlyData', parsedHourlyData);
-              console.log('weeklyAvgTemp', weeklyAvgTemp);
-              console.log('parsedDailyData', parsedDailyData);
 
-              Object.keys(weeklyAvgTemp).forEach((day) => {
+              console.log('parsedDailyData', parsedDailyData);
+              console.log('avgDailyData', avgDailyData);
+
+              Object.keys(avgDailyData).forEach((day) => {
                 const dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
                 dayDiv.style.flex = '1';
@@ -244,11 +204,29 @@ function insertWeatherDiv(parentDivId) {
                 weatherImg.src = 'http://openweathermap.org/img/wn/10d@2x.png';
                 dayDiv.appendChild(weatherImg);
 
-                const tempH3 = document.createElement('p');
-                tempH3.textContent = `Avg Temp: ${weeklyAvgTemp[
+                const avgMaxTempP = document.createElement('p');
+                avgMaxTempP.textContent = `Avg Max Temp: ${avgDailyData[
                   day
-                ].avgTemp.toFixed(2)}°C`;
-                dayDiv.appendChild(tempH3);
+                ].avgMaxTemp.toFixed(2)}°C`;
+                dayDiv.appendChild(avgMaxTempP);
+
+                const avgMinTempP = document.createElement('p');
+                avgMinTempP.textContent = `Avg Min Temp: ${avgDailyData[
+                  day
+                ].avgMinTemp.toFixed(2)}°C`;
+                dayDiv.appendChild(avgMinTempP);
+
+                const avgRainSumP = document.createElement('p');
+                avgRainSumP.textContent = `Avg Rain Sum: ${avgDailyData[
+                  day
+                ].avgRainSum.toFixed(2)}°C`;
+                dayDiv.appendChild(avgRainSumP);
+
+                const avgWindSpeed_10m_maxP = document.createElement('p');
+                avgWindSpeed_10m_maxP.textContent = `Avg Wind Speed: ${avgDailyData[
+                  day
+                ].avgWindSpeed_10m_max.toFixed(2)}°C`;
+                dayDiv.appendChild(avgWindSpeed_10m_maxP);
 
                 weatherDiv.appendChild(dayDiv);
               });

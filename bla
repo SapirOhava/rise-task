@@ -1,0 +1,58 @@
+const parsedHourlyData = dataHist.hourly.time.reduce((acc, time, index) => {
+  // Create the data object just like before
+  const data = {
+    timestamp: time,
+    iconCode: dataHist.hourly.weathercode[index],
+    precipitation: dataHist.hourly.precipitation[index],
+    temperature_2m: dataHist.hourly.temperature_2m[index],
+  };
+
+  // Extracting the date part from the timestamp
+  const date = time.split('T')[0];
+
+  // If the date key doesn't exist in the accumulator, initialize it
+  if (!acc[date]) {
+    acc[date] = {
+      dayData: [],
+      totalTemp: 0,
+      count: 0,
+      avg_temp: 0,
+      dayName: days[new Date(date).getDay()],
+    };
+  }
+
+  // Push the data object to the appropriate date key
+  acc[date].dayData.push(data);
+
+  // Update the total temperature and count for average temperature calculation
+  acc[date].totalTemp += data.temperature_2m;
+  acc[date].count += 1;
+
+  // Update the average temperature
+  acc[date].avg_temp = acc[date].totalTemp / acc[date].count;
+
+  // Return the updated accumulator for the next iteration
+  return acc;
+}, {});
+
+console.log('weeklyAvgWeatherIcons', weeklyAvgWeatherIcons);
+
+const weeklyAvgTemp = Object.values(parsedHourlyData).reduce((acc, cur) => {
+  const dayName = cur.dayName;
+
+  if (!acc[dayName]) {
+    acc[dayName] = {
+      totalTemp: 0,
+      count: 0,
+      avgTemp: 0,
+    };
+  }
+
+  acc[dayName].totalTemp += cur.avg_temp;
+  acc[dayName].count += 1;
+  acc[dayName].avgTemp = acc[dayName].totalTemp / acc[dayName].count;
+
+  return acc;
+}, {});
+console.log('parsedHourlyData', parsedHourlyData);
+console.log('weeklyAvgTemp', weeklyAvgTemp);
