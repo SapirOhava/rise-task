@@ -1,27 +1,29 @@
 // var script = document.createElement('script');
-// script.src = 'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/main/dynamicWeatherScript.js';
+// script.src =
+//   'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/main/dynamicWeatherScript.js';
+// script.setAttribute('data-div-id', 'ad_bnr_atf_01');
 // document.head.appendChild(script);
 
 function insertWeatherDiv(parentDivId) {
   const weatherIcons = {
     0: {
       description: 'Sunny',
-      image: 'http://openweathermap.org/img/wn/01d@2x.png',
+      image: 'https://openweathermap.org/img/wn/01d@2x.png',
     },
 
     63: {
       description: 'Rain',
-      image: 'http://openweathermap.org/img/wn/10d@2x.png',
+      image: 'https://openweathermap.org/img/wn/10d@2x.png',
     },
 
     73: {
       description: 'Snow',
-      image: 'http://openweathermap.org/img/wn/13d@2x.png',
+      image: 'https://openweathermap.org/img/wn/13d@2x.png',
     },
 
     95: {
       description: 'Thunderstorm',
-      image: 'http://openweathermap.org/img/wn/11d@2x.png',
+      image: 'https://openweathermap.org/img/wn/11d@2x.png',
     },
   };
 
@@ -138,7 +140,7 @@ function insertWeatherDiv(parentDivId) {
             const longitude = dataGeo.results[0].longitude;
 
             // im using this free public ( without the need of api keys) to get the local time of the given timezone
-            const TIME_API = `http://worldtimeapi.org/api/timezone/${timezone}`;
+            const TIME_API = `https://worldtimeapi.org/api/timezone/${timezone}`;
             const responseTime = await fetch(TIME_API);
             const dataTime = await responseTime.json();
 
