@@ -96,24 +96,58 @@ function insertWeatherDiv(parentDivId) {
               console.log('history: ', dataHist);
               console.log('forecast: ', dataForecast);
 
-              let parsedDailyData = dataHist.daily.time.map((time, index) => {
-                return {
-                  timestamp: time,
-                  iconCode: dataHist.daily.weathercode[index],
-                  precipitationSum: dataHist.daily.precipitation_sum[index],
-                  maxTemp: dataHist.daily.temperature_2m_max[index],
-                  minTemp: dataHist.daily.temperature_2m_min[index],
-                };
-              });
+              let parsedDailyData = dataHist.daily.time.reduce(
+                (acc, time, index) => {
+                  acc[time] = {
+                    iconCode: dataHist.daily.weathercode[index],
+                    dayName: days[new Date(time).getDay()],
+                    precipitationSum: dataHist.daily.precipitation_sum[index],
+                    maxTemp: dataHist.daily.temperature_2m_max[index],
+                    minTemp: dataHist.daily.temperature_2m_min[index],
+                  };
+                  return acc;
+                },
+                {}
+              );
 
-              let parsedHourlyData = dataHist.hourly.time.map((time, index) => {
-                return {
-                  timestamp: time,
-                  iconCode: dataHist.hourly.weathercode[index],
-                  precipitation: dataHist.hourly.precipitation[index],
-                  temperature_2m: dataHist.hourly.temperature_2m[index],
-                };
-              });
+              const parsedHourlyData = dataHist.hourly.time.reduce(
+                (acc, time, index) => {
+                  // Create the data object just like before
+                  const data = {
+                    timestamp: time,
+                    iconCode: dataHist.hourly.weathercode[index],
+                    precipitation: dataHist.hourly.precipitation[index],
+                    temperature_2m: dataHist.hourly.temperature_2m[index],
+                  };
+
+                  // Extracting the date part from the timestamp
+                  const date = time.split('T')[0];
+
+                  // If the date key doesn't exist in the accumulator, initialize it
+                  if (!acc[date]) {
+                    acc[date] = {
+                      dayData: [],
+                      totalTemp: 0,
+                      count: 0,
+                      avg_temp: 0,
+                    };
+                  }
+
+                  // Push the data object to the appropriate date key
+                  acc[date].dayData.push(data);
+
+                  // Update the total temperature and count for average temperature calculation
+                  acc[date].totalTemp += data.temperature_2m;
+                  acc[date].count += 1;
+
+                  // Update the average temperature
+                  acc[date].avg_temp = acc[date].totalTemp / acc[date].count;
+
+                  // Return the updated accumulator for the next iteration
+                  return acc;
+                },
+                {}
+              );
 
               console.log('parsedDailyData', parsedDailyData);
               console.log('parsedHourlyData', parsedHourlyData);
