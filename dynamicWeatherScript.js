@@ -93,7 +93,7 @@ function insertWeatherDiv(parentDivId) {
     widgetDiv.appendChild(input);
 
     const button = document.createElement('button');
-    button.textContent = 'Get Weather';
+    button.appendChild(document.createTextNode('Get Weather'));
 
     button.style.padding = '10px 20px';
     button.style.fontSize = '1em';
@@ -124,7 +124,11 @@ function insertWeatherDiv(parentDivId) {
     widgetDiv.appendChild(weatherDiv);
 
     button.onclick = async () => {
-      weatherDiv.innerHTML = '';
+      //this instead of weatherDiv.innerHTML = ''; // to sanitize it
+      while (weatherDiv.firstChild) {
+        weatherDiv.removeChild(weatherDiv.firstChild);
+      }
+
       const cityName = input.value.trim();
 
       if (cityName) {
@@ -246,7 +250,7 @@ function insertWeatherDiv(parentDivId) {
                 dayDiv.style.flex = '1';
 
                 const dayTitle = document.createElement('h3');
-                dayTitle.textContent = `${day}: `;
+                dayTitle.appendChild(document.createTextNode(`${day}: `));
                 dayDiv.appendChild(dayTitle);
 
                 const weatherImg = document.createElement('img');
@@ -260,27 +264,43 @@ function insertWeatherDiv(parentDivId) {
                 dayDiv.appendChild(weatherImg);
 
                 const avgMaxTempP = document.createElement('p');
-                avgMaxTempP.textContent = `Avg Max Temp: ${avgDailyData[
-                  day
-                ].avgMaxTemp.toFixed(2)}°C`;
+                avgMaxTempP.appendChild(
+                  document.createTextNode(
+                    `Avg Max Temp: ${avgDailyData[day].avgMaxTemp.toFixed(2)}°C`
+                  )
+                );
+
                 dayDiv.appendChild(avgMaxTempP);
 
                 const avgMinTempP = document.createElement('p');
-                avgMinTempP.textContent = `Avg Min Temp: ${avgDailyData[
-                  day
-                ].avgMinTemp.toFixed(2)}°C`;
+                avgMinTempP.appendChild(
+                  document.createTextNode(
+                    `Avg Min Temp: ${avgDailyData[day].avgMinTemp.toFixed(2)}°C`
+                  )
+                );
+
                 dayDiv.appendChild(avgMinTempP);
 
                 const avgRainSumP = document.createElement('p');
-                avgRainSumP.textContent = `Avg Rain Sum: ${avgDailyData[
-                  day
-                ].avgRainSum.toFixed(2)} mm`;
+                avgRainSumP.appendChild(
+                  document.createTextNode(
+                    `Avg Rain Sum: ${avgDailyData[day].avgRainSum.toFixed(
+                      2
+                    )} mm`
+                  )
+                );
+
                 dayDiv.appendChild(avgRainSumP);
 
                 const avgWindSpeed_10m_maxP = document.createElement('p');
-                avgWindSpeed_10m_maxP.textContent = `Avg Wind Speed: ${avgDailyData[
-                  day
-                ].avgWindSpeed_10m_max.toFixed(2)} m/s`;
+                avgWindSpeed_10m_maxP.appendChild(
+                  document.createTextNode(
+                    `Avg Wind Speed: ${avgDailyData[
+                      day
+                    ].avgWindSpeed_10m_max.toFixed(2)} m/s`
+                  )
+                );
+
                 dayDiv.appendChild(avgWindSpeed_10m_maxP);
 
                 weatherDiv.appendChild(dayDiv);
