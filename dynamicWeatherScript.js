@@ -134,6 +134,20 @@ function insertWeatherDiv(parentDivId) {
               console.log('history: ', dataHist);
               console.log('forecast: ', dataForecast);
 
+              let parsedDailyData = dataHist.daily.time.reduce(
+                (acc, time, index) => {
+                  acc[time] = {
+                    iconCode: dataHist.daily.weathercode[index],
+                    dayName: days[new Date(time).getDay()],
+                    precipitationSum: dataHist.daily.precipitation_sum[index],
+                    maxTemp: dataHist.daily.temperature_2m_max[index],
+                    minTemp: dataHist.daily.temperature_2m_min[index],
+                  };
+                  return acc;
+                },
+                {}
+              );
+
               const parsedHourlyData = dataHist.hourly.time.reduce(
                 (acc, time, index) => {
                   // Create the data object just like before
@@ -174,6 +188,24 @@ function insertWeatherDiv(parentDivId) {
                 {}
               );
 
+              const weeklyAvgWeatherIcons = Object.values(
+                parsedDailyData
+              ).reduce((acc, cur) => {
+                const dayName = cur.dayName;
+
+                if (!acc[dayName]) {
+                  acc[dayName] = {
+                    allIcons: [],
+                  };
+                }
+
+                acc[dayName].allIcons.push(cur.iconCode);
+
+                return acc;
+              }, {});
+
+              console.log('weeklyAvgWeatherIcons', weeklyAvgWeatherIcons);
+
               const weeklyAvgTemp = Object.values(parsedHourlyData).reduce(
                 (acc, cur) => {
                   const dayName = cur.dayName;
@@ -197,17 +229,22 @@ function insertWeatherDiv(parentDivId) {
               );
               console.log('parsedHourlyData', parsedHourlyData);
               console.log('weeklyAvgTemp', weeklyAvgTemp);
-              //  console.log('parsedDailyData', parsedDailyData);
+              console.log('parsedDailyData', parsedDailyData);
 
               Object.keys(weeklyAvgTemp).forEach((day) => {
                 const dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
                 dayDiv.style.flex = '1';
 
-                const dayNameText = document.createTextNode(`${day}: `);
-                dayDiv.appendChild(dayNameText);
+                const dayTitle = document.createElement('h3');
+                dayTitle.textContent = `${day}: `;
+                dayDiv.appendChild(dayTitle);
 
-                const tempH3 = document.createElement('h3');
+                const weatherImg = document.createElement('img');
+                weatherImg.src = 'http://openweathermap.org/img/wn/10d@2x.png';
+                dayDiv.appendChild(weatherImg);
+
+                const tempH3 = document.createElement('p');
                 tempH3.textContent = `Avg Temp: ${weeklyAvgTemp[
                   day
                 ].avgTemp.toFixed(2)}°C`;
