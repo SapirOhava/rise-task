@@ -263,7 +263,7 @@ function insertWeatherDiv(parentDivId) {
                 {}
               );
 
-              Object.keys(avgDailyData).forEach((day) => {
+              days.forEach((day) => {
                 const dayDiv = document.createElement('div');
                 dayDiv.classList.add('day');
                 dayDiv.style.flex = '1';
