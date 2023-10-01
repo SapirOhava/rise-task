@@ -79,7 +79,7 @@ insert this to the console in the browser
 ```javascript
 var script = document.createElement('script');
 script.src =
-  'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js?purge=1';
+  'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task@v1.0.0/dynamicWeatherScript.js';
 document.body.appendChild(script);
 ```
 
@@ -88,14 +88,14 @@ document.body.appendChild(script);
 To use my script, simply add the following line to your HTML file:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js?purge=1"></script>
+<script src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task@v1.0.0/dynamicWeatherScript.js"></script>
 ```
 
 Additionally, remember to add a data-div-id attribute followed by the ID of the div where you want the weather information to be displayed , for example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js?purge=1"
+  src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task@v1.0.0/dynamicWeatherScript.js"
   data-div-id="your-div-id"
 ></script>
 ```
