@@ -48,6 +48,21 @@ function insertWeatherDiv(parentDivId) {
     return weatherIcons[0].image; // Sunny/Clear
   }
 
+  function createWeatherElement(titleText, value) {
+    const weatherElementP = document.createElement('p');
+
+    const title = document.createElement('h6');
+    title.appendChild(document.createTextNode(titleText));
+    title.style.color = '#2980B9'; // Setting the color of the text inside h6
+    title.style.fontSize = '1rem'; // Setting the font size of the text inside h6
+    weatherElementP.appendChild(title);
+
+    const valueTextNode = document.createTextNode(value);
+    weatherElementP.appendChild(valueTextNode);
+
+    return weatherElementP;
+  }
+
   try {
     const days = [
       'Sunday',
@@ -75,9 +90,10 @@ function insertWeatherDiv(parentDivId) {
     widgetDiv.style.flexDirection = 'column';
     widgetDiv.style.border = '1px solid black';
     widgetDiv.style.padding = '20px';
-    widgetDiv.style.width = '300px';
+    // widgetDiv.style.width = '700px';
     widgetDiv.style.borderRadius = '5px';
     widgetDiv.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+    widgetDiv.style.fontFamily = '"Poppins", Sans-serif';
 
     const input = document.createElement('input');
     input.type = 'text';
@@ -100,13 +116,13 @@ function insertWeatherDiv(parentDivId) {
     button.style.border = 'none';
     button.style.borderRadius = '5px';
     button.style.cursor = 'pointer';
-    button.style.backgroundColor = '#4CAF50'; // You can choose any color
+    button.style.backgroundColor = '#5499C7'; // You can choose any color
     button.style.color = 'white';
     button.onmouseover = function () {
-      button.style.backgroundColor = '#45a049'; // Darker shade on hover
+      button.style.backgroundColor = '#2980B9'; // Darker shade on hover
     };
     button.onmouseout = function () {
-      button.style.backgroundColor = '#4CAF50'; // Return to original color on mouse out
+      button.style.backgroundColor = '#5499C7'; // Return to original color on mouse out
     };
 
     widgetDiv.appendChild(button);
@@ -250,7 +266,7 @@ function insertWeatherDiv(parentDivId) {
                 dayDiv.style.flex = '1';
 
                 const dayTitle = document.createElement('h3');
-                dayTitle.appendChild(document.createTextNode(`${day}: `));
+                dayTitle.appendChild(document.createTextNode(`${day}`));
                 dayDiv.appendChild(dayTitle);
 
                 const weatherImg = document.createElement('img');
@@ -263,44 +279,27 @@ function insertWeatherDiv(parentDivId) {
                 );
                 dayDiv.appendChild(weatherImg);
 
-                const avgMaxTempP = document.createElement('p');
-                avgMaxTempP.appendChild(
-                  document.createTextNode(
-                    `Avg Max Temp: ${avgDailyData[day].avgMaxTemp.toFixed(2)}°C`
-                  )
+                const avgMaxTempP = createWeatherElement(
+                  'Avg Max Temp:',
+                  `${avgDailyData[day].avgMaxTemp.toFixed(2)}°C`
                 );
-
                 dayDiv.appendChild(avgMaxTempP);
 
-                const avgMinTempP = document.createElement('p');
-                avgMinTempP.appendChild(
-                  document.createTextNode(
-                    `Avg Min Temp: ${avgDailyData[day].avgMinTemp.toFixed(2)}°C`
-                  )
+                const avgMinTempP = createWeatherElement(
+                  'Avg Min Temp:',
+                  `${avgDailyData[day].avgMinTemp.toFixed(2)}°C`
                 );
-
                 dayDiv.appendChild(avgMinTempP);
 
-                const avgRainSumP = document.createElement('p');
-                avgRainSumP.appendChild(
-                  document.createTextNode(
-                    `Avg Rain Sum: ${avgDailyData[day].avgRainSum.toFixed(
-                      2
-                    )} mm`
-                  )
+                const avgRainSumP = createWeatherElement(
+                  'Avg Rain Sum:',
+                  `${avgDailyData[day].avgRainSum.toFixed(2)} mm`
                 );
-
                 dayDiv.appendChild(avgRainSumP);
-
-                const avgWindSpeed_10m_maxP = document.createElement('p');
-                avgWindSpeed_10m_maxP.appendChild(
-                  document.createTextNode(
-                    `Avg Wind Speed: ${avgDailyData[
-                      day
-                    ].avgWindSpeed_10m_max.toFixed(2)} m/s`
-                  )
+                const avgWindSpeed_10m_maxP = createWeatherElement(
+                  'Avg Wind Speed:',
+                  `${avgDailyData[day].avgWindSpeed_10m_max.toFixed(2)} m/s`
                 );
-
                 dayDiv.appendChild(avgWindSpeed_10m_maxP);
 
                 weatherDiv.appendChild(dayDiv);
