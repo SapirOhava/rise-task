@@ -57,6 +57,17 @@ The calculated average temperatures for each day of the week are derived from th
 A more precise average temperature utilizing the hourly data is plausible,  
 but incorporating both day and night temperatures could potentially skew the accuracy.
 
+## Custom Weather Icon Function
+
+As part of this project, I created a custom function to convert the average weather  
+ conditions into appropriate weather icons and descriptions.  
+ This was necessary as I couldn’t find a public API offering this capability,  
+ and averaging the weather icons directly from the historical data API didn’t seem like a smart approach.
+
+And the getWeatherIconNumber function, which takes the average minimum temperature, maximum temperature,  
+rain sum,and wind speed for each day of the week, and returns the URL of the appropriate weather icon based on these conditions  
+This way, I was able to provide a more accurate representation of the average weather conditions for each day of the week.
+
 ## How to Use the Script
 
 To use my script, simply add the following line to your HTML file:

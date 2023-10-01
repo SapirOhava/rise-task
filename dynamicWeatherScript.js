@@ -129,15 +129,12 @@ function insertWeatherDiv(parentDivId) {
     weatherDiv.style.display = 'flex';
     weatherDiv.style.flexDirection = 'row';
     weatherDiv.style.justifyContent = 'space-between';
-    // Add this to handle overflow content
     weatherDiv.style.flexWrap = 'wrap';
-    // Add some margin at the top for separation
     weatherDiv.style.marginTop = '20px';
 
     widgetDiv.appendChild(weatherDiv);
 
     button.onclick = async () => {
-      //this instead of weatherDiv.innerHTML = ''; // to sanitize it
       while (weatherDiv.firstChild) {
         weatherDiv.removeChild(weatherDiv.firstChild);
       }
@@ -146,7 +143,6 @@ function insertWeatherDiv(parentDivId) {
 
       if (cityName) {
         try {
-          // im calling this geocoding api to get the timezone , latitude and latitude according to the city
           const GEOCODING_API = `https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1&language=en&format=json`;
           const responseGeo = await fetch(GEOCODING_API);
           const dataGeo = await responseGeo.json();
@@ -160,8 +156,6 @@ function insertWeatherDiv(parentDivId) {
             const TIME_API = `https://worldtimeapi.org/api/timezone/${timezone}`;
             const responseTime = await fetch(TIME_API);
             const dataTime = await responseTime.json();
-
-            console.log('worldtimeeeeeeeeeeee resss: ', dataTime);
 
             if (dataTime && dataTime.datetime) {
               const today = new Date(dataTime.datetime);
@@ -198,19 +192,37 @@ function insertWeatherDiv(parentDivId) {
               const responseForecast = await fetch(API_URL_FORCAST);
               const dataForecast = await responseForecast.json();
 
-              console.log('history: ', dataHist);
-              console.log('forecast: ', dataForecast);
+              let parsedDailyDataForcast = dataForecast.daily.time.reduce(
+                (acc, time, index) => {
+                  acc[time] = {
+                    iconCode: dataForecast.daily.weathercode[index],
+                    dayName: days[new Date(time).getDay()],
+                    rainSum: dataForecast.daily.rain_sum[index],
+                    maxTemp: dataForecast.daily.temperature_2m_max[index],
+                    minTemp: dataForecast.daily.temperature_2m_min[index],
+                    windspeed_10m_max:
+                      dataForecast.daily.windspeed_10m_max[index],
+                  };
+                  return acc;
+                },
+                {}
+              );
 
               let parsedDailyData = dataHist.daily.time.reduce(
                 (acc, time, index) => {
-                  acc[time] = {
-                    iconCode: dataHist.daily.weathercode[index],
-                    dayName: days[new Date(time).getDay()],
-                    rainSum: dataHist.daily.rain_sum[index],
-                    maxTemp: dataHist.daily.temperature_2m_max[index],
-                    minTemp: dataHist.daily.temperature_2m_min[index],
-                    windspeed_10m_max: dataHist.daily.windspeed_10m_max[index],
-                  };
+                  if (dataHist.daily.temperature_2m_max[index] === null) {
+                    acc[time] = { ...parsedDailyDataForcast[time] };
+                  } else {
+                    acc[time] = {
+                      iconCode: dataHist.daily.weathercode[index],
+                      dayName: days[new Date(time).getDay()],
+                      rainSum: dataHist.daily.rain_sum[index],
+                      maxTemp: dataHist.daily.temperature_2m_max[index],
+                      minTemp: dataHist.daily.temperature_2m_min[index],
+                      windspeed_10m_max:
+                        dataHist.daily.windspeed_10m_max[index],
+                    };
+                  }
                   return acc;
                 },
                 {}
@@ -253,9 +265,6 @@ function insertWeatherDiv(parentDivId) {
                 },
                 {}
               );
-
-              console.log('parsedDailyData', parsedDailyData);
-              console.log('avgDailyData', avgDailyData);
 
               Object.keys(avgDailyData).forEach((day) => {
                 const dayDiv = document.createElement('div');
