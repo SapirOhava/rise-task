@@ -1,29 +1,81 @@
 # Rise Work Solution
 
-i want to start by expain that i chose this api - https://api.open-meteo.com
-Open-Meteo is an open-source weather API and offers free access for non-commercial use. No API key is required. You can use it immediately
+## Introduction
 
-its gives the historical data for free ( which is not that easy to find ) ,
-very user friendly, and give you also a Geocoding API ,
-the thing is that it gives you the historical data up to the last 5 days
-( in this endpoint - https://archive-api.open-meteo.com/v1/archive?latitude=52.52&longitude=13.41&start_date=2023-09-08&end_date=2023-09-22&hourly=temperature_2m)
-and to get the last 5 days data i need to fetch it from this endpoint - (https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m)
-and also there isn't a direct endpoint to retrieve the average temperature for each day of the last month. However, you can achieve this by making requests to retrieve historical weather data and then calculate the average temperature for each day from the retrieved data.
+I would like to begin by explaining my choice of weather API for this task - Open-Meteo.  
+Open-Meteo is an open-source weather API that offers free access for non-commercial use.  
+It doesn’t require an API key and provides historical data for free.  
+Open-Meteo is user-friendly and equipped with a Geocoding API,  
+essential for converting the user-inputted city name into corresponding timezone,  
+latitude, and longitude parameters - prerequisites for retrieving historical weather data.
 
-i need to also pass to open-meteo api (latidude, longtitudod, timezone)
-i use the geocoding api that is also in this site , to convert from the city the user inserts to the input field.
+## A Deep Dive into the API’s Functionalities
 
-this is the hourly params:
-temperature,precipitation,weather code ( is how the icon will look like),i can also get the wind speed ( at wind speed 10 m)
+Open-Meteo provides historical data up to just the last 5 days.  
+To gather a more comprehensive data set
+, i used a combination of this endpoints :
 
-this is the daily params:
-weather code ( is how the icon will look like)
-// we don't have the actual current temp
-// so im just gonna use the max temp for this day(max temp 2m)
-ill also take the min temp
-precipitation sum
-max min wind speed
+- **Historical Data Endpoint** provides data up to the last 5 days.
+- **Forecast Endpoint** fills in the gap, offering data for the most recent 5 days.
 
-to fetch the data from the weather api - i use the fetch API, which is natively available in modern browsers, to make the requests. that who ever use this script won't need to download any additional libraries.
+The combination ensures a comprehensive dataset covering an entire month.  
+However, there isn’t a direct endpoint to fetch average temperatures,  
+requiring me to do the math with the data i got.
 
-also i use this api (worldtimeapi.org api) to get the current time in the specific timezone of the city the user chose ( to calculate the last month dates , and because the native ) because i can't directly get the current local date in a specific timezone using the native JavaScript Date object. The JavaScript Date object is based on the user's local system's timezone
+## Data Retrieval with Fetch API
+
+The native Fetch API, incorporated in modern browsers,  
+is employed for data retrieval negating the need for additional libraries or packages,  
+ensuring the script remains lightweight and user-friendly.
+
+## Timezone Handling
+
+Retrieving the current local time specific to the chosen city’s timezone is a challenge as the native  
+JavaScript Date object is confined to the user’s local system timezone.  
+The solution is the integration of the WorldTimeAPI,  
+facilitating the retrieval of the current time according to the specific timezone of the chosen city,  
+enabling accurate calculation of dates for the past month.
+
+## Weather Icons Representation
+
+To represent the weather conditions visually,  
+I leveraged a [GitHub gist](https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c) that facilitates the conversion of weather icon codes into  
+static hosted image URLs corresponding to the appropriate weather conditions.
+
+## Data Parameters
+
+The historical weather data API yields both hourly and daily datasets based on specified parameters.  
+For hourly data, parameters include temperature at 2m above ground, rain, weather code  
+(determining the icon representation), and wind speed at 10m above ground.
+
+For daily data, parameters extend to weather code, maximum and minimum temperatures at 2m above ground, cumulative rain,  
+and maximum wind speed at 10m above ground.
+
+## Average Temperature Calculation
+
+The calculated average temperatures for each day of the week are derived from the average of the daily maximum and minimum temperatures.  
+A more precise average temperature utilizing the hourly data is plausible,  
+but incorporating both day and night temperatures could potentially skew the accuracy.
+
+## How to Use the Script
+
+To use my script, simply add the following line to your HTML file:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js"></script>
+```
+
+Additionally, remember to add a data-div-id attribute followed by the ID of the div where you want the weather information to be displayed , for example:
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js"
+  data-div-id="your-div-id"
+></script>
+```
+
+Replace "your-div-id" with the actual ID of your target div.
+
+## Easy Embedding with jsDelivr
+
+The script is easily embeddable by hosting it online and allowing users to add it via a script tag using jsDelivr. jsDelivr serves the raw JavaScript file, offering an advantage over the GitHub repository URL. This makes integrating the weather script into any webpage seamless and user-friendly, requiring only a single line of code.
