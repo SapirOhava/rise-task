@@ -68,6 +68,21 @@ And the getWeatherIconNumber function, which takes the average minimum temperatu
 rain sum,and wind speed for each day of the week, and returns the URL of the appropriate weather icon based on these conditions  
 This way, I was able to provide a more accurate representation of the average weather conditions for each day of the week.
 
+## Easy Embedding with jsDelivr
+
+The script is easily embeddable by hosting it online and allowing users to add it via a script tag using jsDelivr. jsDelivr serves the raw JavaScript file, offering an advantage over the GitHub repository URL. This makes integrating the weather script into any webpage seamless and user-friendly, requiring only a single line of code.
+
+## How to test my script on other websites
+
+insert this to the console in the browser
+
+```javascript
+var script = document.createElement('script');
+script.src =
+  'https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js';
+document.body.appendChild(script);
+```
+
 ## How to Use the Script
 
 To use my script, simply add the following line to your HTML file:
@@ -86,7 +101,3 @@ Additionally, remember to add a data-div-id attribute followed by the ID of the 
 ```
 
 Replace "your-div-id" with the actual ID of your target div.
-
-## Easy Embedding with jsDelivr
-
-The script is easily embeddable by hosting it online and allowing users to add it via a script tag using jsDelivr. jsDelivr serves the raw JavaScript file, offering an advantage over the GitHub repository URL. This makes integrating the weather script into any webpage seamless and user-friendly, requiring only a single line of code.
