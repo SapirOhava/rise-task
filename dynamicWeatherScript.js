@@ -1,6 +1,3 @@
-//to use my script just add this - <script src="https://cdn.jsdelivr.net/gh/SapirOhava/rise-task/dynamicWeatherScript.js"></script>
-// remeber to add data-div-id="<with some div id>"
-
 function insertWeatherDiv(parentDivId) {
   const weatherIcons = {
     0: {
